@@ -15,7 +15,7 @@ WriteMakefile(
     PREREQ_PM => {
         'Test::More' => 0,
 		'Log::Log4perl' => 0,
-		'File::RoundRobin' => 0,
+		'File::RoundRobin' => 0.03,
     },
     dist                => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     clean               => { FILES => 'Log-Log4perl-Appender-File-FixedSize-*' },
