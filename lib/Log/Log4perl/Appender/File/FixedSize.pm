@@ -6,7 +6,7 @@ use warnings;
 
 =head1 NAME
 
-Log::Log4perl::Appender::File::FixedSize - The great new Log::Log4perl::Appender::File::FixedSize!
+Log::Log4perl::Appender::File::FixedSize - Log::Log4perl appender wich creates files limited in size
 
 =head1 VERSION
 
@@ -19,14 +19,21 @@ our $VERSION = '0.01';
 
 =head1 SYNOPSIS
 
-Quick summary of what the module does.
+This module allows you to create log files with a limited size. Once the file
+reaches the size limit it starts to overwrite the old content with the new one
+in the same order it was added.
 
 Perhaps a little code snippet.
 
     use Log::Log4perl::Appender::File::FixedSize;
 
-    my $foo = Log::Log4perl::Appender::File::FixedSize->new();
+    my $file = Log::Log4perl::Appender::File::FixedSize->new(
+                        filename => '/tmp/log.txt',
+                        size     => '10Mb',
+    );
     ...
+    
+    $file->log(message => 'Hello world');
 
 =head1 EXPORT
 
