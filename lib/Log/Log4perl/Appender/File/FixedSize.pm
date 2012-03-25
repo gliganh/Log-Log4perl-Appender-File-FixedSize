@@ -4,9 +4,11 @@ use 5.006;
 use strict;
 use warnings;
 
+use File::RoundRobin;
+
 =head1 NAME
 
-Log::Log4perl::Appender::File::FixedSize - Log::Log4perl appender wich creates files limited in size
+Log::Log4perl::Appender::File::FixedSize - Log::Log4perl appender which creates files limited in size
 
 =head1 VERSION
 
@@ -23,7 +25,7 @@ This module allows you to create log files with a limited size. Once the file
 reaches the size limit it starts to overwrite the old content with the new one
 in the same order it was added.
 
-Perhaps a little code snippet.
+Example:
 
     use Log::Log4perl::Appender::File::FixedSize;
 
@@ -35,25 +37,57 @@ Perhaps a little code snippet.
     
     $file->log(message => 'Hello world');
 
-=head1 EXPORT
+=head1 Log::Log4perl config
 
-A list of functions that can be exported.  You can delete this section
-if you don't export anything, such as for a purely object-oriented module.
+Here is an example how you can use this module with Log::Log4perl
+
+	log4perl.rootLogger=DEBUG, test
+    
+	log4perl.appender.test=Log::Log4perl::Appender::File::FixedSize
+	log4perl.appender.test.filename=test.log
+	log4perl.appender.test.mode=append
+	log4perl.appender.test.size=1M
+    
+	log4perl.appender.test.layout=PatternLayout
+	log4perl.appender.test.layout.ConversionPattern=[%r] %F %L %c - %m%n
+
+Basically it's the same config as for Log::Log4perl::Appender::File with an extra paramater : I<size>
+
 
 =head1 SUBROUTINES/METHODS
 
-=head2 function1
+=head2 new
 
 =cut
 
-sub function1 {
+sub new {
+	my $class = shift;
+	my %params = @_;
+	
+	$class = ref($class) if ref($class);
+	
+	my $self = {
+				__file__ => File::RoundRobin->new( 
+								path => $params{filename},
+								size => $params{size},
+								mode => $params{mode} || "new",
+								autoflush => $params{autoflush}
+				 			),
+				};
+			
+	bless $self, $class;
+	
+	return $self;
 }
 
-=head2 function2
+=head2 log
 
 =cut
 
-sub function2 {
+sub log {
+	my ($self,%params) = @_;
+		
+	$self->{__file__}->write($params{message});
 }
 
 =head1 AUTHOR
@@ -65,8 +99,6 @@ Gligan Calin Horea, C<< <gliganh at gmail.com> >>
 Please report any bugs or feature requests to C<bug-log-log4perl-appender-file-fixedsize at rt.cpan.org>, or through
 the web interface at L<http://rt.cpan.org/NoAuth/ReportBug.html?Queue=Log-Log4perl-Appender-File-FixedSize>.  I will be notified, and then you'll
 automatically be notified of progress on your bug as I make changes.
-
-
 
 
 =head1 SUPPORT
